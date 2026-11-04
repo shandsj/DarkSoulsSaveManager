@@ -2,8 +2,18 @@ const fs = require('fs');
 const path = require('path');
 
 function ensureDirectory(directory, fileSystem) {
-  if (!fileSystem.existsSync(directory)) {
-    fileSystem.mkdirSync(directory, { recursive: true });
+  if (fileSystem.existsSync(directory)) return;
+
+  const parent = path.dirname(directory);
+  if (parent !== directory && !fileSystem.existsSync(parent)) {
+    ensureDirectory(parent, fileSystem);
+  }
+
+  try {
+    fileSystem.mkdirSync(directory);
+  } catch (error) {
+    // Another process may have created the directory between the check and mkdir.
+    if (!fileSystem.existsSync(directory)) throw error;
   }
 }
 
@@ -29,12 +39,12 @@ function copyDirectory(source, destination, fileSystem) {
 function initializeStorage(options) {
   options = options || {};
   const fileSystem = options.fs || fs;
+  if (!options.userDataPath) throw new Error('userDataPath is required');
+
   const userDataPath = path.resolve(options.userDataPath);
   const legacyDirectory = path.resolve(options.legacyDirectory || process.cwd());
   const settingsPath = path.join(userDataPath, 'settings.json');
   const savesPath = path.join(userDataPath, 'saves');
-
-  if (!options.userDataPath) throw new Error('userDataPath is required');
   ensureDirectory(userDataPath, fileSystem);
 
   const legacySavesPath = path.join(legacyDirectory, 'saves');
