@@ -130,6 +130,13 @@
         const { app, globalShortcut, dialog, getCurrentWindow } = require('electron').remote;
         var storage = require('../platform/storage').initializeStorage({ userDataPath: app.getPath('userData') });
         var settingsFilePath = storage.settingsPath;
+
+        // Discover supported game saves inside native and Flatpak Steam libraries.
+        svc.findProtonSaves = function () {
+            var libraries = require('../platform/steam').discoverSteamLibraries();
+            return require('../platform/protonSaves').discoverProtonSaves(libraries);
+        };
+
         if (!path.isAbsolute(svc.data.settings.saveDirectory)) {
             svc.data.settings.saveDirectory = storage.savesPath;
         }
