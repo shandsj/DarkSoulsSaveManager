@@ -41,12 +41,16 @@ function createWindow() {
 ipcMain.on('app:get-path', (event, name) => { event.returnValue = app.getPath(name); });
 ipcMain.handle('dialog:open', async (event, options) => {
   const owner = BrowserWindow.fromWebContents(event.sender);
-  const result = await dialog.showOpenDialog(owner || undefined, options || {});
+  const result = owner
+    ? await dialog.showOpenDialog(owner, options || {})
+    : await dialog.showOpenDialog(options || {});
   return result.filePaths || [];
 });
 ipcMain.handle('dialog:message', async (event, options) => {
   const owner = BrowserWindow.fromWebContents(event.sender);
-  return dialog.showMessageBox(owner || undefined, options || {});
+  return owner
+    ? dialog.showMessageBox(owner, options || {})
+    : dialog.showMessageBox(options || {});
 });
 ipcMain.handle('shell:show-item', (_event, filePath) => shell.showItemInFolder(filePath));
 ipcMain.handle('window:close', event => {
