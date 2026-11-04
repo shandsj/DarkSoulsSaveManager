@@ -128,6 +128,11 @@
         var fs = require("fs");
         var path = require('path');
         const { app, globalShortcut, dialog, getCurrentWindow } = require('electron').remote;
+        var storage = require('../platform/storage').initializeStorage({ userDataPath: app.getPath('userData') });
+        var settingsFilePath = storage.settingsPath;
+        if (!path.isAbsolute(svc.data.settings.saveDirectory)) {
+            svc.data.settings.saveDirectory = storage.savesPath;
+        }
 
         //Encode all data to JSON
         svc.saveToJson = function () {
@@ -142,7 +147,7 @@
         //Persists data to the settings file
         svc.saveSettings = function () {
             try {
-                fs.writeFileSync("settings.json", svc.saveToJson(), 'utf8');
+                fs.writeFileSync(settingsFilePath, svc.saveToJson(), 'utf8');
             } catch(ex) {
                 dialog.showMessageBox(null, {
                     title: 'Cannot Save',
@@ -154,7 +159,7 @@
 
         //Loads data from the settings file
         svc.loadSettings = function () {
-            svc.loadFromJson(fs.readFileSync("settings.json", "utf8"));
+            svc.loadFromJson(fs.readFileSync(settingsFilePath, "utf8"));
             init();
 
             //Set latest id
@@ -257,7 +262,7 @@
             var currentDate = new Date();
             var fileName = svc.getDateString(currentDate);
             var saveName = svc.getDateString(currentDate, svc.data.settings.backupNameFormat);
-            var backupFileName = svc.data.settings.saveDirectory + fileName + '.bak';
+            var backupFileName = path.join(svc.data.settings.saveDirectory, fileName + '.bak');
             if (fs.existsSync(backupFileName)) {
                 svc.showSuccessToast("You have already created a backup this second. Please wait 1 second and try again.");
                 return;
