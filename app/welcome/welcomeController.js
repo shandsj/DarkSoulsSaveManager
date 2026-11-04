@@ -35,11 +35,11 @@
         vm.findSave = function () {
             var defaultPath = null;
             if (electronAPI.appData) {
-                defaultPath = path.join(process.env.APPDATA, "DarkSoulsIII");
+                defaultPath = path.join(electronAPI.appData, "DarkSoulsIII");
                 if (!fs.existsSync(defaultPath)) defaultPath = '.';
                 var directories = fs.readdirSync(defaultPath);
                 var saveDir = _.find(directories, function(o) {
-                    return fs.statSync(path.join(defaultPath, o)).isDirectory;
+                    return fs.statSync(path.join(defaultPath, o)).isDirectory();
                 });
                 if (saveDir){
                     defaultPath = path.join(defaultPath, saveDir);
