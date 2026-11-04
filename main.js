@@ -38,7 +38,7 @@ function createWindow() {
   });
 }
 
-ipcMain.handle('app:get-path', (_event, name) => app.getPath(name));
+ipcMain.on('app:get-path', (event, name) => { event.returnValue = app.getPath(name); });
 ipcMain.handle('dialog:open', async (event, options) => {
   const owner = BrowserWindow.fromWebContents(event.sender);
   const result = await dialog.showOpenDialog(owner || undefined, options || {});
