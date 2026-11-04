@@ -124,10 +124,10 @@
             }
         };
 
-        //Imports
+        // Imports exposed by the isolated preload bridge.
+        var electronAPI = window.electronAPI;
         var fs = electronAPI.fs;
         var path = electronAPI.path;
-        var electronAPI = window.electronAPI;
         var storage = electronAPI.initializeStorage(electronAPI.getPath('userData'));
         var settingsFilePath = storage.settingsPath;
 
