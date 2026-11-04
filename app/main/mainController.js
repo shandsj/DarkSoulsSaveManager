@@ -3,7 +3,7 @@
         var vm = this;
         var fs = require("fs");
         var path = require("path");
-        const {shell, dialog} = require('electron').remote;
+        var electronAPI = window.electronAPI;
 
         //ensure welcome screen initialization
         if (!core.data.settings.saveFileLocation) {
@@ -34,21 +34,20 @@
             //append a (non-existent file) to ensure it opens the actual directory instead of the parent directory
             var folder = path.join(vm.settings.saveDirectory, "a");
             var fullPath = path.resolve(folder);
-            shell.showItemInFolder(fullPath);
+            electronAPI.showItemInFolder(fullPath);
         };
 
         vm.importSave = function (event) {
-            dialog.showOpenDialog({
+            electronAPI.showOpenDialog({
                 properties: ['openFile'],
                 // defaultPath: defaultPath,
                 filters: [
                     { name: 'Dark Souls Save', extensions: ['sl2'] },
                     { name: 'All Files', extensions: ['*'] }
                 ]
-            }, function (filePath) {
-                if (filePath && filePath.length > 0) {
-                    var fileName = path.basename(filePath[0]);
-                    var backupFilePath = core.createBackup({filePath: filePath[0]});
+            }).then(function (filePaths) {
+                if (filePaths && filePaths.length > 0) {
+                    var backupFilePath = core.createBackup({filePath: filePaths[0]});
                     core.showSuccessToast(messages.saveImported + path.basename(backupFilePath));
                 }
             });
