@@ -1,5 +1,4 @@
 (function () {
-    // const remote = require('electron').remote
 
     var coreService = function ($rootScope, $mdToast, $mdDialog, messages, $interval) {
         var svc = this;
@@ -189,23 +188,6 @@
 
         svc.findSaveIndex = function (id) {
             return _.findIndex(svc.data.saves, { id: id });
-        };
-
-        svc.registerShortcuts = function (backupFunction, restoreFunction) {
-            var backup = (svc.data.settings.hotkeys.backup.modifier1) + "+" + (svc.data.settings.hotkeys.backup.modifier2 ? (svc.data.settings.hotkeys.backup.modifier2 + "+") : "") + svc.data.settings.hotkeys.backup.modifier3
-            var restore = (svc.data.settings.hotkeys.restore.modifier1) + "+" + (svc.data.settings.hotkeys.restore.modifier2 ? (svc.data.settings.hotkeys.restore.modifier2 + "+") : "") + svc.data.settings.hotkeys.restore.modifier3
-            globalShortcut.unregisterAll();
-            globalShortcut.register(backup, () => {
-                if (backupFunction) {
-                    backupFunction();
-                }
-            });
-
-            globalShortcut.register(restore, () => {
-                if (restoreFunction) {
-                    restoreFunction();
-                }
-            });
         };
 
         //get date string based on the format setting
