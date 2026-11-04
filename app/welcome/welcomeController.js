@@ -6,6 +6,20 @@
         var fs = require("fs");
         var storage = require('../platform/storage').initializeStorage({ userDataPath: require('electron').remote.app.getPath('userData') });
 
+        vm.detectedSaves = [];
+        if (process.platform === 'linux') {
+            try {
+                vm.detectedSaves = core.findProtonSaves();
+            } catch (error) {
+                // Save discovery is best-effort; manual file selection remains available.
+            }
+        }
+
+        vm.useDetectedSave = function (save) {
+            core.data.settings.saveFileLocation = save.path;
+            vm.saveFileLocation = save.path;
+        };
+
         vm.continue = function () {
             core.saveSettings();
             $location.path("/main")
