@@ -2,12 +2,12 @@
     var welcomeController = function ($scope, $location, core) {
         var vm = this;
         var electronAPI = window.electronAPI;
-        var path = require("path");
-        var fs = require("fs");
-        var storage = require('../platform/storage').initializeStorage({ userDataPath: electronAPI.getPath('userData') });
+        var path = electronAPI.path;
+        var fs = electronAPI.fs;
+        var storage = electronAPI.initializeStorage(electronAPI.getPath('userData'));
 
         vm.detectedSaves = [];
-        if (process.platform === 'linux') {
+        if (electronAPI.platform === 'linux') {
             try {
                 vm.detectedSaves = core.findProtonSaves();
             } catch (error) {
@@ -34,7 +34,7 @@
 
         vm.findSave = function () {
             var defaultPath = null;
-            if (process.env.APPDATA) {
+            if (electronAPI.appData) {
                 defaultPath = path.join(process.env.APPDATA, "DarkSoulsIII");
                 if (!fs.existsSync(defaultPath)) defaultPath = '.';
                 var directories = fs.readdirSync(defaultPath);
