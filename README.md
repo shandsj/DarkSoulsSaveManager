@@ -1,42 +1,52 @@
-# A save manager for dark souls.  
+# Dark Souls Save Manager
 
-Can be used with any game that uses only a single save file.  
+A desktop application for backing up, organizing, and restoring single-file game saves.
 
-Confirmed working for:  
-Dark Souls  
-Dark Souls 2  
-Dark Souls 3  
-Elden Ring  
+Originally confirmed for Dark Souls, Dark Souls 2, Dark Souls 3, and Elden Ring.
 
-## To use:  
-Download: https://github.com/omgftw/DarkSoulsSaveManager/releases  
+## Development
 
-## To develop:  
-Get node: https://nodejs.org  
-Run "npm install" from command line in the root directory (The directory containing "package.json")  
-Run "npm install -g electron"  
-Run "electron main.js" from command line in the root directory  
-Open the project in your favorite editor/IDE and edit the files in the "app" folder  
-After making changes hit "Ctrl+R" or select "View -> Reload" From the menu  
+Requires Node.js 22 or newer.
 
-## To build:  
-Get node: https://nodejs.org  
-Get InnoSetup
-Run "npm install" from command line in the root directory (The directory containing "package.json")  
-Run "gulp build"  
-Run the installer.iss file using InnoSetup  
-The installer can be found in the "Output" directory
+```sh
+npm install
+npm start
+```
 
-## Linux support (in development)
+Run the platform tests:
+
+```sh
+npm test
+```
+
+## Build packages
+
+Linux AppImage:
+
+```sh
+npm run dist:linux
+```
+
+Windows installer:
+
+```sh
+npm run dist:windows
+```
+
+macOS disk image:
+
+```sh
+npm run dist:mac
+```
+
+Packages are written to `dist/`.
+
+## Linux support
 
 Linux support is being developed in the `feature/linux-native-build` branch, with Bazzite as the primary test platform.
 
-The initial platform layer discovers native and Flatpak Steam installations and parses both generations of Steam's `libraryfolders.vdf` format. Proton game-save discovery and Linux packaging are being added in subsequent steps.
+The Linux platform layer discovers native and Flatpak Steam libraries, parses both generations of Steam's `libraryfolders.vdf`, and locates known game saves inside the corresponding Proton prefixes. Detected save files are offered on the welcome screen, alongside manual file selection.
 
-Run the platform tests with:
+Settings and backup files are stored in Electron's per-user application data directory. Existing working-directory settings and backups are migrated without deleting the originals.
 
-```sh
-node --test
-```
-
-See [Linux support notes](docs/linux-support.md) for the compatibility and data-safety goals.
+See [Linux support notes](docs/linux-support.md) for compatibility details and data-safety goals.
