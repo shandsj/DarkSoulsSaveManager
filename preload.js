@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getPath: name => ipcRenderer.invoke('app:get-path', name),
+  getPath: name => ipcRenderer.sendSync('app:get-path', name),
   showOpenDialog: options => ipcRenderer.invoke('dialog:open', options),
   showMessageBox: options => ipcRenderer.invoke('dialog:message', options),
   showItemInFolder: filePath => ipcRenderer.invoke('shell:show-item', filePath),
