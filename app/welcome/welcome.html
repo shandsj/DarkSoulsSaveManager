@@ -1,28 +1,52 @@
- <md-content layout-padding>
-     <div>
-      <form name="userForm">
+<main class="welcome-shell" layout="column" layout-align="start center">
+  <section class="welcome-panel" layout="column">
+    <header class="welcome-header">
+      <div class="app-mark">W</div>
+      <div>
+        <p class="eyebrow">SAVE MANAGER</p>
+        <h1>Welcome back, Undead.</h1>
+        <p class="welcome-subtitle">Choose your Dark Souls save file to start managing backups.</p>
+      </div>
+    </header>
 
-        <md-input-container class="md-block" ng-show="vm.saveFileLocation">
-          <label>Save File Location</label>
-          <input ng-model="vm.saveFileLocation" disabled>
-        </md-input-container>
-
-        <div ng-if="vm.detectedSaves.length">
-          <h3>Detected Steam / Proton Saves</h3>
-          <md-list>
-            <md-list-item ng-repeat="save in vm.detectedSaves">
-              <div class="md-list-item-text">
-                <h4>{{save.gameName}}</h4>
-                <p>{{save.path}}</p>
-              </div>
-              <md-button class="md-secondary" ng-click="vm.useDetectedSave(save)">Use This Save</md-button>
-            </md-list-item>
-          </md-list>
+    <section class="detected-section" ng-if="vm.detectedSaves.length">
+      <div class="section-heading">
+        <div>
+          <h2>Steam saves found</h2>
+          <p>We found these saves in your Steam / Proton libraries.</p>
         </div>
+        <span class="count-pill">{{vm.detectedSaves.length}} found</span>
+      </div>
+      <md-list class="detected-list">
+        <md-list-item class="detected-save" ng-repeat="save in vm.detectedSaves track by save.path" ng-class="{'is-selected': vm.saveFileLocation === save.path}" ng-click="vm.useDetectedSave(save)">
+          <div class="game-icon"><span>DS</span></div>
+          <div class="md-list-item-text" layout="column">
+            <h3>{{save.gameName}}</h3>
+            <p class="save-path">{{save.path}}</p>
+          </div>
+          <md-button class="select-save-button" ng-click="vm.useDetectedSave(save); $event.stopPropagation()">
+            {{vm.saveFileLocation === save.path ? 'Selected' : 'Use save'}}
+          </md-button>
+        </md-list-item>
+      </md-list>
+    </section>
 
-        <md-button class="md-raised md-primary" ng-click="vm.findSave()">Find Save</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.continue()" ng-show="vm.saveFileLocation">Continue</md-button>
-
-      </form>
-    </div>
-  </md-content>
+    <section class="manual-section">
+      <h2 ng-if="!vm.detectedSaves.length">Select a save file</h2>
+      <h2 ng-if="vm.detectedSaves.length">Or choose a save manually</h2>
+      <p>Choose the <code>.sl2</code> save file used by your game.</p>
+      <div class="selected-file" ng-if="vm.saveFileLocation">
+        <span class="file-check">✓</span>
+        <div layout="column">
+          <strong>Selected save</strong>
+          <span class="save-path">{{vm.saveFileLocation}}</span>
+        </div>
+      </div>
+      <div class="welcome-actions" layout="row" layout-wrap>
+        <md-button class="md-raised choose-button" ng-click="vm.findSave()">Browse for save</md-button>
+        <md-button class="md-raised md-primary continue-button" ng-click="vm.continue()" ng-disabled="!vm.saveFileLocation">Continue <span aria-hidden="true">›</span></md-button>
+      </div>
+    </section>
+    <footer class="welcome-footer">Your save files stay where they are. Backups are stored separately on this computer.</footer>
+  </section>
+</main>
