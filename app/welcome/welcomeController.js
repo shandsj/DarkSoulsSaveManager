@@ -4,6 +4,7 @@
         const {dialog} = require('electron').remote;
         var path = require("path");
         var fs = require("fs");
+        var storage = require('../platform/storage').initializeStorage({ userDataPath: require('electron').remote.app.getPath('userData') });
 
         vm.continue = function () {
             core.saveSettings();
@@ -11,7 +12,7 @@
         };
 
         //TODO load file data and redirect to main if exists
-        if (fs.existsSync("settings.json")) {
+        if (fs.existsSync(storage.settingsPath)) {
             core.loadSettings();
             if (core.data && core.data.settings && core.data.settings.saveFileLocation)
             vm.continue();
