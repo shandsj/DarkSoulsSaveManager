@@ -124,16 +124,15 @@
         };
 
         //Imports
-        var fs = require("fs");
-        var path = require('path');
+        var fs = electronAPI.fs;
+        var path = electronAPI.path;
         var electronAPI = window.electronAPI;
-        var storage = require('../platform/storage').initializeStorage({ userDataPath: electronAPI.getPath('userData') });
+        var storage = electronAPI.initializeStorage(electronAPI.getPath('userData'));
         var settingsFilePath = storage.settingsPath;
 
         // Discover supported game saves inside native and Flatpak Steam libraries.
         svc.findProtonSaves = function () {
-            var libraries = require('../platform/steam').discoverSteamLibraries();
-            return require('../platform/protonSaves').discoverProtonSaves(libraries);
+            return electronAPI.discoverProtonSaves();
         };
 
         if (!path.isAbsolute(svc.data.settings.saveDirectory)) {
