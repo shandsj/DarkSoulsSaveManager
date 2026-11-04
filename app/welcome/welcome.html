@@ -7,6 +7,19 @@
           <input ng-model="vm.saveFileLocation" disabled>
         </md-input-container>
 
+        <div ng-if="vm.detectedSaves.length">
+          <h3>Detected Steam / Proton Saves</h3>
+          <md-list>
+            <md-list-item ng-repeat="save in vm.detectedSaves">
+              <div class="md-list-item-text">
+                <h4>{{save.gameName}}</h4>
+                <p>{{save.path}}</p>
+              </div>
+              <md-button class="md-secondary" ng-click="vm.useDetectedSave(save)">Use This Save</md-button>
+            </md-list-item>
+          </md-list>
+        </div>
+
         <md-button class="md-raised md-primary" ng-click="vm.findSave()">Find Save</md-button>
         <md-button class="md-raised md-primary" ng-click="vm.continue()" ng-show="vm.saveFileLocation">Continue</md-button>
 
