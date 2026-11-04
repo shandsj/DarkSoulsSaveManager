@@ -1,9 +1,9 @@
 (function () {
     var mainController = function ($scope, $location, $mdDialog, $mdToast, core, dialogService, messages) {
         var vm = this;
+        var electronAPI = window.electronAPI;
         var fs = electronAPI.fs;
         var path = electronAPI.path;
-        var electronAPI = window.electronAPI;
 
         //ensure welcome screen initialization
         if (!core.data.settings.saveFileLocation) {
