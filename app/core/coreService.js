@@ -127,8 +127,8 @@
         //Imports
         var fs = require("fs");
         var path = require('path');
-        const { app, globalShortcut, dialog, getCurrentWindow } = require('electron').remote;
-        var storage = require('../platform/storage').initializeStorage({ userDataPath: app.getPath('userData') });
+        var electronAPI = window.electronAPI;
+        var storage = require('../platform/storage').initializeStorage({ userDataPath: electronAPI.getPath('userData') });
         var settingsFilePath = storage.settingsPath;
 
         // Discover supported game saves inside native and Flatpak Steam libraries.
@@ -156,11 +156,11 @@
             try {
                 fs.writeFileSync(settingsFilePath, svc.saveToJson(), 'utf8');
             } catch(ex) {
-                dialog.showMessageBox(null, {
+                electronAPI.showMessageBox({
+                    type: 'error',
                     title: 'Cannot Save',
-                    message: 'Could not save to current folder. Please either run the program as admin or install it to a folder that does not require admin permissions.'
-                });
-                getCurrentWindow().close();
+                    message: 'Could not save your settings. Check that your user data folder is writable.'
+                }).then(function () { electronAPI.closeWindow(); });
             }
         };
 
@@ -382,20 +382,22 @@
         svc.registerShortcuts = function () {
             var backup = (svc.data.settings.hotkeys.backup.modifier1) + "+" + (svc.data.settings.hotkeys.backup.modifier2 ? (svc.data.settings.hotkeys.backup.modifier2 + "+") : "") + svc.data.settings.hotkeys.backup.modifier3
             var restore = (svc.data.settings.hotkeys.restore.modifier1) + "+" + (svc.data.settings.hotkeys.restore.modifier2 ? (svc.data.settings.hotkeys.restore.modifier2 + "+") : "") + svc.data.settings.hotkeys.restore.modifier3
-            globalShortcut.unregisterAll();
-            globalShortcut.register(backup, () => {
-                svc.createBackup();
-            });
-
-            globalShortcut.register(restore, () => {
-                var selectedSaveIndex = _.findIndex(svc.data.saves, { selected: true });
-
-                if (selectedSaveIndex > -1) {
-                    svc.restoreSave(svc.data.saves[selectedSaveIndex].id);
-                } else {
-                    svc.showSuccessToast("You must mark a save as primary in order to use the restore shortcut")
-                }
-            });
+            electronAPI.registerShortcuts({ backup: backup, restore: restore });
+            if (!svc.shortcutListenerInstalled) {
+                electronAPI.onShortcut(function (action) {
+                    if (action === 'backup') {
+                        svc.createBackup();
+                    } else if (action === 'restore') {
+                        var selectedSaveIndex = _.findIndex(svc.data.saves, { selected: true });
+                        if (selectedSaveIndex > -1) {
+                            svc.restoreSave(svc.data.saves[selectedSaveIndex].id);
+                        } else {
+                            svc.showSuccessToast("You must mark a save as primary in order to use the restore shortcut");
+                        }
+                    }
+                });
+                svc.shortcutListenerInstalled = true;
+            }
         };
 
         svc.addCategory = function (categoryName, event) {
