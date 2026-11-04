@@ -2,6 +2,7 @@
 
     var coreService = function ($rootScope, $mdToast, $mdDialog, messages, $interval) {
         var svc = this;
+        var electronAPI = window.electronAPI;
 
         var currentId = 1;
         svc.newId = function (seed) {
