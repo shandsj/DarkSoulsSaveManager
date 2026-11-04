@@ -6,7 +6,7 @@ The Linux port is being developed with Bazzite as the primary validation platfor
 
 The platform layer checks common native Steam locations and the per-user Flatpak Steam location. It reads each installation's `steamapps/libraryfolders.vdf` and supports both the legacy string format and the current object format.
 
-Steam library discovery is only the first stage. Game-specific save discovery must also account for Proton prefixes under `steamapps/compatdata/<appid>/pfx`. The application must never assume that the Steam client is installed in one fixed directory.
+Known game saves are discovered in each game's Proton prefix under `steamapps/compatdata/<appid>/pfx`. The current profiles include Dark Souls Remastered, Dark Souls II: Scholar of the First Sin, Dark Souls III, and Elden Ring. Dark Souls Remastered is searched in the Windows Documents/NBGI save location rather than the AppData/Roaming location used by some other titles.
 
 ## Data safety requirements
 
@@ -16,7 +16,12 @@ Steam library discovery is only the first stage. Game-specific save discovery mu
 - Create a verified backup before replacing a live save.
 - Warn when the target game is running or Steam Cloud may be synchronizing.
 - Keep Windows save discovery and packaging functional.
+- Migration copies legacy settings and backup files without deleting the originals or overwriting existing destination data.
+
+## Electron modernization
+
+The application now targets Electron 45 and uses a preload bridge with context isolation for native dialogs, shell integration, application paths, and global shortcuts. The renderer still has Node integration enabled to support the legacy AngularJS code; removing that remaining dependency is a separate hardening step.
 
 ## Packaging direction
 
-Bazzite is an image-based Fedora system, so the first Linux deliverable should not require writing into the host OS. AppImage and Flatpak are the initial packaging candidates. RPM packaging can be added for conventional Fedora-based installations after the runtime is modernized.
+The first Linux package is an AppImage, built by the Linux GitHub Actions workflow. This avoids requiring changes to Bazzite's immutable host operating system. Flatpak packaging remains a follow-up target; RPM packaging can be added for conventional Fedora-based installations.
