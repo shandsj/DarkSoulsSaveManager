@@ -1,4 +1,4 @@
-name: Linux platform tests
+name: Linux platform tests and AppImage
 
 on:
   push:
@@ -9,13 +9,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  platform-tests:
-    name: Linux platform tests
+  linux:
+    name: Tests and Linux AppImage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
       - name: Run platform tests
-        run: node --test
+        run: npm test
+      - name: Build AppImage
+        run: npm run dist:linux
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: dark-souls-save-manager-linux-appimage
+          path: dist/*.AppImage
+          if-no-files-found: error
