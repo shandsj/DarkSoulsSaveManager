@@ -47,9 +47,9 @@
                 ]
             }, function (filePath) {
                 if (filePath && filePath.length > 0) {
-                    var fileName = path.win32.basename(filePath[0]);
+                    var fileName = path.basename(filePath[0]);
                     var backupFilePath = core.createBackup({filePath: filePath[0]});
-                    core.showSuccessToast(messages.saveImported + path.win32.basename(backupFilePath));
+                    core.showSuccessToast(messages.saveImported + path.basename(backupFilePath));
                 }
             });
         };
