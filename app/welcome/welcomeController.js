@@ -1,10 +1,10 @@
 (function () {
     var welcomeController = function ($scope, $location, core) {
         var vm = this;
-        const {dialog} = require('electron').remote;
+        var electronAPI = window.electronAPI;
         var path = require("path");
         var fs = require("fs");
-        var storage = require('../platform/storage').initializeStorage({ userDataPath: require('electron').remote.app.getPath('userData') });
+        var storage = require('../platform/storage').initializeStorage({ userDataPath: electronAPI.getPath('userData') });
 
         vm.detectedSaves = [];
         if (process.platform === 'linux') {
@@ -45,17 +45,17 @@
                     defaultPath = path.join(defaultPath, saveDir);
                 }
             }
-            dialog.showOpenDialog({
+            electronAPI.showOpenDialog({
                 properties: ['openFile'],
                 defaultPath: defaultPath,
                 filters: [
                     { name: 'Dark Souls Save', extensions: ['sl2'] },
                     { name: 'All Files', extensions: ['*'] }
                 ]
-            }, function (filePath) {
-                if (filePath) {
-                    core.data.settings.saveFileLocation = filePath[0];
-                    vm.saveFileLocation = filePath[0];
+            }).then(function (filePaths) {
+                if (filePaths && filePaths.length > 0) {
+                    core.data.settings.saveFileLocation = filePaths[0];
+                    vm.saveFileLocation = filePaths[0];
                     $scope.$apply();
                 }
             });
