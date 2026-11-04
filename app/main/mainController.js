@@ -1,8 +1,8 @@
 (function () {
     var mainController = function ($scope, $location, $mdDialog, $mdToast, core, dialogService, messages) {
         var vm = this;
-        var fs = require("fs");
-        var path = require("path");
+        var fs = electronAPI.fs;
+        var path = electronAPI.path;
         var electronAPI = window.electronAPI;
 
         //ensure welcome screen initialization
