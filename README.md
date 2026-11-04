@@ -26,3 +26,17 @@ Run "npm install" from command line in the root directory (The directory contain
 Run "gulp build"  
 Run the installer.iss file using InnoSetup  
 The installer can be found in the "Output" directory
+
+## Linux support (in development)
+
+Linux support is being developed in the `feature/linux-native-build` branch, with Bazzite as the primary test platform.
+
+The initial platform layer discovers native and Flatpak Steam installations and parses both generations of Steam's `libraryfolders.vdf` format. Proton game-save discovery and Linux packaging are being added in subsequent steps.
+
+Run the platform tests with:
+
+```sh
+node --test
+```
+
+See [Linux support notes](docs/linux-support.md) for the compatibility and data-safety goals.
