@@ -1,68 +1,80 @@
-const electron = require('electron')
-// Module to control application life.
-const app = electron.app
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
+const electron = require('electron');
+const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
+const ipcMain = electron.ipcMain;
+const dialog = electron.dialog;
+const shell = electron.shell;
+const globalShortcut = electron.globalShortcut;
+const path = require('path');
+const url = require('url');
 
-const path = require('path')
-const url = require('url')
+let mainWindow;
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
-
-app.setAppUserModelId("com.omgftw.dssm");
+app.setAppUserModelId('com.omgftw.dssm');
 app.setAsDefaultProtocolClient('dssm');
 
-function createWindow () {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
-  //TODO uncomment this
-  //mainWindow.setMenu(null);
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 720,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: true,
+      enableRemoteModule: false
+    }
+  });
 
-  // and load the index.html of the app.
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',
     slashes: true
-  }))
+  }));
 
-  // Open the DevTools.
-  const isProd = process.execPath.search('electron') === -1;
-  if (!isProd) {
-    mainWindow.webContents.openDevTools()
-  }
+  if (!app.isPackaged) mainWindow.webContents.openDevTools();
 
-  // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
+    mainWindow = null;
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+ipcMain.handle('app:get-path', (_event, name) => app.getPath(name));
+ipcMain.handle('dialog:open', async (event, options) => {
+  const owner = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showOpenDialog(owner || undefined, options || {});
+  return result.filePaths || [];
+});
+ipcMain.handle('dialog:message', async (event, options) => {
+  const owner = BrowserWindow.fromWebContents(event.sender);
+  return dialog.showMessageBox(owner || undefined, options || {});
+});
+ipcMain.handle('shell:show-item', (_event, filePath) => shell.showItemInFolder(filePath));
+ipcMain.handle('window:close', event => {
+  const owner = BrowserWindow.fromWebContents(event.sender);
+  if (owner) owner.close();
+});
+ipcMain.handle('shortcuts:register', (_event, accelerators) => {
+  globalShortcut.unregisterAll();
+  const registered = {};
+  Object.keys(accelerators || {}).forEach(action => {
+    const accelerator = accelerators[action];
+    if (!accelerator) return;
+    registered[action] = globalShortcut.register(accelerator, () => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('shortcut:triggered', action);
+      }
+    });
+  });
+  return registered;
+});
 
-// Quit when all windows are closed.
+app.whenReady().then(createWindow);
 app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
+  if (process.platform !== 'darwin') app.quit();
+});
 app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+  if (mainWindow === null) createWindow();
+});
+app.on('will-quit', function () {
+  globalShortcut.unregisterAll();
+});
