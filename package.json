@@ -5,7 +5,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "node --test"
+    "test": "node --test",
+    "dist:linux": "electron-builder --linux AppImage --publish never",
+    "dist:windows": "electron-builder --win nsis --publish never",
+    "dist:mac": "electron-builder --mac dmg --publish never"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -28,15 +31,41 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "asar": "^0.13.0",
     "electron": "^45.2.2",
-    "fs-jetpack": "^0.10.5",
-    "gulp": "^3.9.1",
-    "gulp-clean": "^0.4.0",
-    "gulp-minify-css": "^1.2.4",
-    "gulp-rename": "^1.2.3",
-    "gulp-uglify": "^2.0.0",
-    "gulp-usemin": "^0.3.27",
-    "q": "^1.4.1"
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.omgftw.dssm",
+    "productName": "Dark Souls Save Manager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!test/**",
+      "!docs/**",
+      "!build/**",
+      "!dist/**",
+      "!*.md",
+      "!gulpfile.js",
+      "!build.windows.js",
+      "!\\.github/**"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Game"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    }
   }
 }
