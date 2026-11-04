@@ -4,7 +4,8 @@
   "description": "An app to organize and backup dark souls saves",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "node --test"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
