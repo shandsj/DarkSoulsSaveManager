@@ -1,6 +1,6 @@
 {
   "name": "dark-souls-save-organizer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An app to organize and backup dark souls saves",
   "main": "main.js",
   "scripts": {
