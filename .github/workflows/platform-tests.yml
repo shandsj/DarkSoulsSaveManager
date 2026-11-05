@@ -21,6 +21,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Run platform tests
         run: npm test
+      - name: Smoke test Electron UI and backup flow
+        run: xvfb-run -a npm run smoke:linux
       - name: Build AppImage
         run: npm run dist:linux
       - name: Upload AppImage
