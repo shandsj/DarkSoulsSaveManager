@@ -133,7 +133,7 @@ async function runSmokeTest() {
         const title = row.querySelector('.backup-name-line h3');
         const metadata = row.querySelector('.backup-meta');
         const action = row.querySelector('.row-action');
-        const rgb = value => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+        const rgb = value => (value.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
         const luminance = value => {
           const channels = rgb(value).map(channel => {
             const normalized = channel / 255;
