@@ -123,8 +123,12 @@ async function runSmokeTest() {
     await waitForRenderer("location.hash.indexOf('#!/main') !== -1 && !!document.querySelector('.backup-panel')", 10000);
     const mainState = await mainWindow.webContents.executeJavaScript(`
       (() => {
-        const core = angular.element(document.body).injector().get('core');
-        const backupPath = core.createBackup();
+        const injector = angular.element(document.body).injector();
+        const core = injector.get('core');
+        let backupPath;
+        injector.get('$rootScope').$apply(() => {
+          backupPath = core.createBackup();
+        });
         const row = document.querySelector('.backup-row');
         const title = row.querySelector('.backup-name-line h3');
         const metadata = row.querySelector('.backup-meta');
