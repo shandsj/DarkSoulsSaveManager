@@ -146,17 +146,32 @@ async function runSmokeTest() {
           return Number(((values[0] + 0.05) / (values[1] + 0.05)).toFixed(2));
         };
         const rowBackground = getComputedStyle(row).backgroundColor;
+        const titleColor = getComputedStyle(title).color;
+        const dateColor = getComputedStyle(metadata).color;
         const actionStyle = getComputedStyle(action);
+        const actionBackground = actionStyle.backgroundColor === 'rgba(0, 0, 0, 0)' ? rowBackground : actionStyle.backgroundColor;
         const contrastRatios = {
-          title: contrast(getComputedStyle(title).color, rowBackground),
-          date: contrast(getComputedStyle(metadata).color, rowBackground),
-          action: contrast(actionStyle.color, actionStyle.backgroundColor === 'rgba(0, 0, 0, 0)' ? rowBackground : actionStyle.backgroundColor)
+          title: contrast(titleColor, rowBackground),
+          date: contrast(dateColor, rowBackground),
+          action: contrast(actionStyle.color, actionBackground)
         };
+        const rawStyles = {
+          rowBackground,
+          titleColor,
+          dateColor,
+          actionColor: actionStyle.color,
+          actionBackground
+        };
+        const contrastError = Object.keys(contrastRatios).some(key =>
+          !Number.isFinite(contrastRatios[key]) || contrastRatios[key] < 4.5
+        );
         return {
           heading: document.querySelector('.main-intro h1').textContent.trim(),
           backupCount: core.data.saves.length,
           backupExists: window.electronAPI.fs.existsSync(backupPath),
           contrastRatios,
+          rawStyles,
+          contrastError,
           backupPath
         };
       })()
@@ -165,8 +180,11 @@ async function runSmokeTest() {
     if (mainState.heading !== 'Backup collection' || mainState.backupCount !== 1 || !mainState.backupExists) {
       throw new Error('Main screen or backup smoke test failed: ' + JSON.stringify(mainState));
     }
-    if (Object.keys(mainState.contrastRatios).some(key => mainState.contrastRatios[key] < 4.5)) {
-      throw new Error('Backup row text does not meet 4.5:1 contrast target: ' + JSON.stringify(mainState.contrastRatios));
+    if (mainState.contrastError) {
+      throw new Error('Backup row text contrast check failed: ' + JSON.stringify({
+        contrastRatios: mainState.contrastRatios,
+        rawStyles: mainState.rawStyles
+      }));
     }
 
     const restoreState = await mainWindow.webContents.executeJavaScript(`
