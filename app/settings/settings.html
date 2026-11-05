@@ -1,140 +1,140 @@
-<md-content layout-padding>
-    <div>
-        <form name="vm.settingsForm">
-
-            <!--<div layout="row" layout-align="space-between center">
-                <md-input-container class="md-block" flex="80">
-                    <label>Save File Location</label>
-                    <input ng-model="vm.settings.saveFileLocation" disabled>
-                </md-input-container>
-                <md-button class="md-raised md-primary" ng-click="vm.findSave()" flex="20">Find Save</md-button>
-            </div>-->
-            <div layout="row" layout-align="space-between center">
-                <div flex="80">
-                    <md-input-container class="md-block">
-                        <label>Save File Location</label>
-                        <input ng-model="vm.data.settings.saveFileLocation" disabled>
-                    </md-input-container>
-                </div>
-                <div flex="20">
-                    <md-button class="md-raised md-primary" ng-click="vm.findSave()" layout-fill>Find Save</md-button>
-                </div>
-            </div>
-            <div>
-                <md-input-container class="md-block">
-                    <label>Save Backup Location</label>
-                    <input ng-model="vm.data.settings.saveDirectory">
-                </md-input-container>
-            </div>
-            <div>
-                <md-input-container class="md-block">
-                    <label>Default Backup File Format</label>
-                    <input ng-model="vm.data.settings.backupFileFormat">
-                </md-input-container>
-            </div>
-            <div>
-                <md-input-container class="md-block">
-                    <label>Default Backup Name Format</label>
-                    <input ng-model="vm.data.settings.backupNameFormat">
-                </md-input-container>
-            </div>
-            <div>
-                <md-checkbox ng-model="vm.data.settings.autosave" aria-label="Auto-Save Enabled Checkbox"></md-checkbox>
-                Auto-Save {{ vm.core.data.settings.autosave ? ("(" + vm.core.data.autosaveTimeRemaining + ")") : null }}
-            </div>
-            <div>
-                <md-input-container class="md-block">
-                    <label>Auto-Save Interval (Minutes)</label>
-                    <input type="text" name="autosaveInterval" ng-model="vm.data.settings.autosaveInterval" ng-pattern="/^\d*\.?\d+$/" />
-                    <div ng-messages="vm.settingsForm.autosaveInterval.$error">
-                        <div ng-message="pattern">
-                            Must be a valid number
-                        </div>
-                    </div>
-                </md-input-container>
-            </div>
-            <div>
-                <md-checkbox ng-model="vm.data.settings.autosaveMaxLimit" aria-label="Auto-Save Max Save Limit"></md-checkbox>
-                Auto-Save Max Save Limit (Automatically deletes old auto-saves beyond a certain amount. Will not delete manually created saves.)
-            </div>
-            <div>
-                <md-input-container class="md-block">
-                    <label>Auto-Save Max Save Amount</label>
-                    <input type="text" name="autosaveMaxCount" ng-model="vm.data.settings.autosaveMaxCount" ng-pattern="/^\d+$/" />
-                    <div ng-messages="vm.settingsForm.autosaveMaxCount.$error">
-                        <div ng-message="pattern">
-                            Must be a valid number
-                        </div>
-                    </div>
-                </md-input-container>
-            </div>
-
-            <div>
-                <div>
-                    Create Backup Shortcut (Game must be in windowed mode)
-                </div>
-                <div layout="row">
-                    <md-select ng-model="vm.data.settings.hotkeys.backup.modifier1" flex="33" aria-label="backup modifier 1">
-                        <md-option value="CommandOrControl"><em>Ctrl</em></md-option>
-                        <md-option value="Alt"><em>Alt</em></md-option>
-                        <md-option value="Shift"><em>Shift</em></md-option>
-                    </md-select>
-                    <md-select ng-model="vm.data.settings.hotkeys.backup.modifier2" flex="33" aria-label="backup modifier 2">
-                        <md-option><em>None</em></md-option>
-                        <md-option value="CommandOrControl"><em>Ctrl</em></md-option>
-                        <md-option value="Alt"><em>Alt</em></md-option>
-                        <md-option value="Shift"><em>Shift</em></md-option>
-                    </md-select>
-                    <md-select ng-model="vm.data.settings.hotkeys.backup.modifier3" flex="33" aria-label="backup modifier 3">
-                        <md-option ng-repeat="char in vm.characters" ng-value="char">{{char}}</md-option>
-                    </md-select>
-                </div>
-            </div>
-
-            <div>
-                <div>
-                    Restore Selected Save Shortcut (Game must be in windowed mode)
-                </div>
-                <div layout="row">
-                    <md-select ng-model="vm.data.settings.hotkeys.restore.modifier1" flex="33" aria-label="restore modifier 1">
-                        <md-option value="CommandOrControl"><em>Ctrl</em></md-option>
-                        <md-option value="Alt"><em>Alt</em></md-option>
-                        <md-option value="Shift"><em>Shift</em></md-option>
-                    </md-select>
-                    <md-select ng-model="vm.data.settings.hotkeys.restore.modifier2" flex="33" aria-label="restore modifier 2">
-                        <md-option><em>None</em></md-option>
-                        <md-option value="CommandOrControl"><em>Ctrl</em></md-option>
-                        <md-option value="Alt"><em>Alt</em></md-option>
-                        <md-option value="Shift"><em>Shift</em></md-option>
-                    </md-select>
-                    <md-select ng-model="vm.data.settings.hotkeys.restore.modifier3" flex="33" aria-label="restore modifier 3">
-                        <md-option ng-repeat="char in vm.characters" ng-value="char">{{char}}</md-option>
-                    </md-select>
-                </div>
-            </div>
-
-            <div>
-                <md-checkbox ng-model="vm.data.settings.notificationSound" aria-label="Backup/Restore Notification Sound"></md-checkbox>
-                Backup/Restore Notification Sound
-            </div>
-            <div id="notification-volume-container" ng-if="vm.data.settings.notificationSound === true">
-                <div>Notification Volume</div>
-                <md-slider-container>
-                    <md-slider flex min="0" max="100" ng-model="vm.data.settings.notificationSoundVolume" aria-label="Notification Volume"></md-slider>
-                    <md-input-container>
-                        <input flex type="number" ng-model="vm.data.settings.notificationSoundVolume" aria-label="Notification Volume" aria-controls="notification-volume-slider" readonly>
-                    </md-input-container>
-              </md-slider-container>
-            </div>
-
-            <div>
-                <md-checkbox ng-model="vm.data.settings.windowsNotification" aria-label="Backup/Restore Windows Notification"></md-checkbox>
-                Backup/Restore Windows Notification
-            </div>
-
-            <md-button class="md-raised" ng-click="vm.cancel()">Cancel</md-button>
-            <md-button class="md-raised md-primary" ng-click="vm.save()" ng-disabled="vm.settingsForm.$invalid">Save</md-button>
-
-        </form>
+<main class="app-shell settings-screen" layout="column">
+  <header class="app-toolbar" layout="row" layout-align="space-between center">
+    <div class="brand-lockup" layout="row" layout-align="start center">
+      <div class="brand-mark">DS</div>
+      <div>
+        <div class="brand-eyebrow">DARK SOULS</div>
+        <div class="brand-title">Save Manager</div>
+      </div>
     </div>
-</md-content>
+    <md-button class="toolbar-button" ng-click="vm.cancel()">← Back to backups</md-button>
+  </header>
+
+  <section class="main-intro settings-intro">
+    <div>
+      <p class="eyebrow">PREFERENCES</p>
+      <h1>Settings</h1>
+      <p class="main-subtitle">Choose where backups live and how the manager handles them.</p>
+    </div>
+  </section>
+
+  <form name="vm.settingsForm" novalidate>
+    <section class="settings-card">
+      <div class="settings-card-heading">
+        <span class="settings-icon">▣</span>
+        <div><h2>Game save and backup storage</h2><p>Files are left in their original game locations. The manager stores separate backup copies.</p></div>
+      </div>
+      <div class="settings-field">
+        <label>Current game save</label>
+        <div class="field-with-action">
+          <input class="settings-text" ng-model="vm.data.settings.saveFileLocation" readonly placeholder="No game save selected">
+          <md-button class="subtle-button" ng-click="vm.findSave()">Browse…</md-button>
+        </div>
+      </div>
+      <div class="settings-field">
+        <label for="saveDirectory">Backup folder</label>
+        <input id="saveDirectory" class="settings-text" ng-model="vm.data.settings.saveDirectory" spellcheck="false">
+        <p class="field-help">The folder where managed backup files are stored.</p>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-field">
+          <label for="backupFileFormat">Backup filename format</label>
+          <input id="backupFileFormat" class="settings-text" ng-model="vm.data.settings.backupFileFormat">
+          <p class="field-help">Tokens: {year}, {month}, {day}, {hours}, {minutes}, {seconds}</p>
+        </div>
+        <div class="settings-field">
+          <label for="backupNameFormat">Backup display name format</label>
+          <input id="backupNameFormat" class="settings-text" ng-model="vm.data.settings.backupNameFormat">
+          <p class="field-help">The name shown in your backup list.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="settings-card-heading">
+        <span class="settings-icon">◷</span>
+        <div><h2>Automatic backups</h2><p>Let the manager create periodic restore points while you play.</p></div>
+      </div>
+      <label class="setting-toggle">
+        <md-checkbox ng-model="vm.data.settings.autosave" aria-label="Enable automatic backups"></md-checkbox>
+        <span><strong>Enable automatic backups</strong><small>{{vm.core.data.settings.autosave ? ("Next backup: " + vm.core.data.autosaveTimeRemaining) : "Automatic backups are currently off."}}</small></span>
+      </label>
+      <div class="settings-grid">
+        <div class="settings-field">
+          <label for="autosaveInterval">Backup interval (minutes)</label>
+          <input id="autosaveInterval" class="settings-text" type="number" min="1" step="1" name="autosaveInterval" ng-model="vm.data.settings.autosaveInterval" ng-pattern="/^\d*\.?\d+$/">
+          <p class="field-error" ng-messages="vm.settingsForm.autosaveInterval.$error"><span ng-message="pattern">Enter a valid number.</span></p>
+        </div>
+        <div class="settings-field">
+          <label for="autosaveMaxCount">Maximum automatic backups</label>
+          <input id="autosaveMaxCount" class="settings-text" type="number" min="0" step="1" name="autosaveMaxCount" ng-model="vm.data.settings.autosaveMaxCount" ng-pattern="/^\d+$/">
+          <p class="field-help">Older automatic backups are removed when the limit is reached.</p>
+          <p class="field-error" ng-messages="vm.settingsForm.autosaveMaxCount.$error"><span ng-message="pattern">Enter a whole number.</span></p>
+        </div>
+      </div>
+      <label class="setting-toggle secondary-toggle">
+        <md-checkbox ng-model="vm.data.settings.autosaveMaxLimit" aria-label="Limit the number of automatic backups"></md-checkbox>
+        <span><strong>Limit automatic backups</strong><small>Only automatic backups are cleaned up. Manual backups are never removed by this limit.</small></span>
+      </label>
+    </section>
+
+    <section class="settings-card">
+      <div class="settings-card-heading">
+        <span class="settings-icon">⌨</span>
+        <div><h2>Keyboard shortcuts</h2><p>Use shortcuts while the game is running in windowed mode.</p></div>
+      </div>
+      <div class="shortcut-row">
+        <div><strong>Create backup</strong><small>Save a new restore point.</small></div>
+        <div class="shortcut-selects" layout="row">
+          <md-select ng-model="vm.data.settings.hotkeys.backup.modifier1" aria-label="Backup shortcut modifier one">
+            <md-option value="CommandOrControl">Ctrl</md-option><md-option value="Alt">Alt</md-option><md-option value="Shift">Shift</md-option>
+          </md-select>
+          <md-select ng-model="vm.data.settings.hotkeys.backup.modifier2" aria-label="Backup shortcut modifier two">
+            <md-option value="">None</md-option><md-option value="CommandOrControl">Ctrl</md-option><md-option value="Alt">Alt</md-option><md-option value="Shift">Shift</md-option>
+          </md-select>
+          <md-select ng-model="vm.data.settings.hotkeys.backup.modifier3" aria-label="Backup shortcut key">
+            <md-option ng-repeat="char in vm.characters" ng-value="char">{{char}}</md-option>
+          </md-select>
+        </div>
+      </div>
+      <div class="shortcut-row">
+        <div><strong>Restore primary backup</strong><small>Restore the selected primary save.</small></div>
+        <div class="shortcut-selects" layout="row">
+          <md-select ng-model="vm.data.settings.hotkeys.restore.modifier1" aria-label="Restore shortcut modifier one">
+            <md-option value="CommandOrControl">Ctrl</md-option><md-option value="Alt">Alt</md-option><md-option value="Shift">Shift</md-option>
+          </md-select>
+          <md-select ng-model="vm.data.settings.hotkeys.restore.modifier2" aria-label="Restore shortcut modifier two">
+            <md-option value="">None</md-option><md-option value="CommandOrControl">Ctrl</md-option><md-option value="Alt">Alt</md-option><md-option value="Shift">Shift</md-option>
+          </md-select>
+          <md-select ng-model="vm.data.settings.hotkeys.restore.modifier3" aria-label="Restore shortcut key">
+            <md-option ng-repeat="char in vm.characters" ng-value="char">{{char}}</md-option>
+          </md-select>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="settings-card-heading">
+        <span class="settings-icon">◖</span>
+        <div><h2>Notifications</h2><p>Choose which confirmations you want to hear or see.</p></div>
+      </div>
+      <label class="setting-toggle">
+        <md-checkbox ng-model="vm.data.settings.notificationSound" aria-label="Play notification sounds"></md-checkbox>
+        <span><strong>Play notification sounds</strong><small>Play a sound after a backup or restore.</small></span>
+      </label>
+      <div class="settings-field volume-field" ng-if="vm.data.settings.notificationSound">
+        <label for="notificationVolume">Notification volume <strong>{{vm.data.settings.notificationSoundVolume}}%</strong></label>
+        <md-slider id="notificationVolume" min="0" max="100" step="1" ng-model="vm.data.settings.notificationSoundVolume" aria-label="Notification volume"></md-slider>
+      </div>
+      <label class="setting-toggle">
+        <md-checkbox ng-model="vm.data.settings.windowsNotification" aria-label="Show desktop notifications"></md-checkbox>
+        <span><strong>Show desktop notifications</strong><small>Display a desktop notification after backup and restore actions.</small></span>
+      </label>
+    </section>
+
+    <div class="settings-actions" layout="row" layout-align="end center">
+      <md-button class="subtle-button" ng-click="vm.cancel()">Cancel</md-button>
+      <md-button class="primary-action" ng-click="vm.save()" ng-disabled="vm.settingsForm.$invalid">Save settings</md-button>
+    </div>
+  </form>
+</main>
