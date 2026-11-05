@@ -1,6 +1,6 @@
 {
   "name": "dark-souls-save-organizer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An app to organize and backup dark souls saves",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "test": "node --test",
     "dist:linux": "electron-builder --linux AppImage --publish never",
     "dist:windows": "electron-builder --win nsis --publish never",
-    "dist:mac": "electron-builder --mac dmg --publish never"
+    "dist:mac": "electron-builder --mac dmg --publish never",
+    "smoke:linux": "electron . --smoke-test --no-sandbox"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
