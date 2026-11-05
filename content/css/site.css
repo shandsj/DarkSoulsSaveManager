@@ -612,3 +612,147 @@ body {
 .backup-list md-list-item.backup-row.primary-backup:hover > button.md-no-style {
   background-color: #353027 !important;
 }
+
+
+/* High-contrast backup cards. Use ordinary divs rather than Angular Material
+   md-list-item so Material's generated hover/selected surfaces cannot wash out
+   the save name, date, or action labels. */
+.backup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+.backup-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 84px;
+  padding: 13px 15px;
+  border: 1px solid #414853;
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  background: #1d222a;
+  color: #f4f6f9;
+  cursor: pointer;
+  outline: none;
+  transition: background-color .12s ease, border-color .12s ease;
+}
+.backup-row.primary-backup {
+  border-color: #70552f;
+  border-left-color: #d49a4d;
+  background: #30271d;
+}
+.backup-row:hover,
+.backup-row:focus-visible {
+  border-color: #707b89;
+  background: #303741;
+}
+.backup-row.primary-backup:hover,
+.backup-row.primary-backup:focus-visible {
+  border-color: #b17b3d;
+  background: #3c3022;
+}
+.backup-row:focus-visible {
+  box-shadow: 0 0 0 2px rgba(222, 169, 94, .35);
+}
+.backup-row .backup-type {
+  flex: 0 0 42px;
+}
+.backup-row .backup-details {
+  min-width: 170px;
+  padding: 1px 12px 1px 0;
+}
+.backup-row .backup-name-line h3 {
+  margin: 0;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.backup-row .backup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 7px;
+  color: #c3cbd6 !important;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.backup-row .backup-meta span {
+  color: #c3cbd6 !important;
+  opacity: 1 !important;
+}
+.backup-row .backup-meta .meta-dot {
+  color: #929eac !important;
+}
+.backup-row .backup-actions {
+  flex: 0 0 auto;
+  gap: 3px;
+}
+.backup-row .backup-actions .row-action.md-button {
+  min-height: 34px;
+  margin: 0;
+  padding: 0 9px;
+  border: 1px solid #596473;
+  border-radius: 6px;
+  background: #292f38 !important;
+  color: #edf1f6 !important;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 32px;
+  letter-spacing: 0;
+  opacity: 1 !important;
+  text-transform: none;
+}
+.backup-row .backup-actions .row-action.md-button:hover,
+.backup-row .backup-actions .row-action.md-button:focus {
+  border-color: #8794a4;
+  background: #3a424e !important;
+  color: #ffffff !important;
+}
+.backup-row .backup-actions .restore-action.md-button {
+  border-color: #80613a;
+  background: #3b2f20 !important;
+  color: #ffd397 !important;
+}
+.backup-row .backup-actions .delete-action.md-button {
+  border-color: #78504d;
+  background: #352524 !important;
+  color: #ffb6ad !important;
+}
+.backup-row .backup-actions .restore-action.md-button:hover {
+  background: #594329 !important;
+  color: #ffe2b7 !important;
+}
+.backup-row .backup-actions .delete-action.md-button:hover {
+  background: #50302e !important;
+  color: #ffd0ca !important;
+}
+@media (max-width: 850px) {
+  .backup-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .backup-row .backup-details {
+    flex: 1;
+  }
+  .backup-row .backup-actions {
+    flex: 1 1 100%;
+    margin-left: 58px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 600px) {
+  .backup-list { padding: 9px; }
+  .backup-row { padding: 12px; }
+  .backup-row .backup-actions { margin-left: 0; }
+  .backup-row .backup-actions .row-action.md-button {
+    min-height: 32px;
+    padding: 0 7px;
+    font-size: 10px;
+  }
+}
