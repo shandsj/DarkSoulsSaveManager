@@ -1,117 +1,106 @@
-<div layout="row" layout-align="space-between">
-  <div>
-    <md-menu>
-      <md-button class="md-raised" ng-click="vm.openMenu($mdOpenMenu, $event)">
-        <md-icon md-svg-src="content/menu.svg" aria-label="Menu" class="md-secondary md-hue-3"></md-icon>
-        <md-tooltip md-direction="bottom">
-          Menu
-        </md-tooltip>
-      </md-button>
-      <md-menu-content>
-        <md-menu-item>
-          <md-button ng-click="vm.importSave($event)">
-            <md-icon md-svg-src="content/call_received.svg" md-menu-align-target></md-icon>
-            Import Save
-          </md-button>
-        </md-menu-item>
-        <md-menu-item>
-          <md-button ng-click="vm.openSaveBackupFolder($event)">
-            <md-icon md-svg-src="content/folder.svg" md-menu-align-target></md-icon>
-            Open Save Backup Folder
-          </md-button>
-        </md-menu-item>
-      </md-menu-content>
-    </md-menu>
-  </div>
-  <div>
-    <md-button class="md-raised" ng-click="vm.settingsPage()">
-      <md-icon md-svg-src="content/settings.svg" aria-label="Settings" class="md-secondary md-hue-3"></md-icon>
-      <md-tooltip md-direction="bottom">
-        Settings
-      </md-tooltip>
-    </md-button>
-  </div>
-</div>
-
-<div layout="row" layout-padding>
-  <!--<md-content layout-padding>-->
-  <md-input-container flex="100">
-    <label>
-      Category
-    </label>
-    <md-select ng-model="vm.settings.selectedCategory" aria-label="Category" ng-change="vm.categorySelect()">
-      <md-option ng-value="null"><em>All</em></md-option>
-      <md-option ng-repeat="category in vm.categories" ng-value="category">{{category}}</md-option>
-    </md-select>
-  </md-input-container>
-
-  <md-input-container>
-    <md-button class="md-raised" ng-click="vm.addCategory()">
-      <md-icon md-svg-src="content/add.svg" aria-label="Add new category" class="md-secondary md-hue-3"></md-icon>
-      <md-tooltip md-direction="bottom">
-        Add New Category
-      </md-tooltip>
-    </md-button>
-  </md-input-container>
-
-  <md-input-container>
-    <md-button class="md-raised" ng-click="vm.removeCategory()">
-      <md-icon md-svg-src="content/remove.svg" aria-label="Add new category" class="md-secondary md-hue-3"></md-icon>
-      <md-tooltip md-direction="bottom">
-        Remove Category
-      </md-tooltip>
-    </md-button>
-  </md-input-container>
-  <!--</md-content>-->
-</div>
-
-<div layout="column" ng-cloak class="md-inline-form">
-  <md-content layout-padding>
-    <div>
-      <form name="saveForm">
-        <md-list>
-          <md-subheader class="md-no-sticky">Saves</md-subheader>
-          <md-list-item ng-repeat="save in vm.saves track by save.id" ng-if="!vm.settings.selectedCategory || save.category === vm.settings.selectedCategory" ng-click="vm.selectSave(save.id, $event)" class="noright" md-colors="{background: save.selected ? 'blue' : 'grey-700' }">
-            <!--<img alt="{{ save.name }}" ng-src="{{ person.img }}" class="md-avatar" />-->
-            <p>{{ save.name + (save.category && !vm.settings.selectedCategory ? (" (" + save.category + ")") : "") }}</p>
-            <!--<md-checkbox class="md-secondary" ng-model="person.selected"></md-checkbox>-->
-            <md-icon ng-if="save.type === 'auto'" md-svg-src="content/save.svg" ng-click="vm.makeAutosavePermanent(save.id, $event)" aria-label="Keep autosave (won't be auto-deleted)y" class="md-secondary md-hue-3">
-              <md-tooltip md-direction="bottom">
-                Keep autosave (won't be auto-deleted)
-              </md-tooltip>
-            </md-icon>
-            <md-icon md-svg-src="content/done.svg" ng-click="vm.selectSave(save.id, $event)" aria-label="Set as Primary" class="md-secondary md-hue-3">
-              <md-tooltip md-direction="bottom">
-                Set as Primary
-              </md-tooltip>
-            </md-icon>
-            <md-icon md-svg-src="content/edit.svg" ng-click="vm.renameSave(save.id, save.name, $event)" aria-label="Rename Save" class="md-secondary md-hue-3">
-              <md-tooltip md-direction="bottom">
-                Rename Save
-              </md-tooltip>
-            </md-icon>
-            <md-icon md-svg-src="content/folder.svg" ng-click="vm.changeCategory(save.id, save.name, $event)" aria-label="Change Save Category"
-              class="md-secondary md-hue-3">
-              <md-tooltip md-direction="bottom">
-                Change Category
-              </md-tooltip>
-            </md-icon>
-            <md-icon md-svg-src="content/delete.svg" ng-click="vm.deleteSave(save.id, $event)" aria-label="Delete Save" class="md-secondary md-hue-3">
-              <md-tooltip md-direction="bottom">
-                Delete Save
-              </md-tooltip>
-            </md-icon>
-            <md-icon md-svg-src="content/file_upload.svg" ng-click="vm.restoreSave(save.id, $event)" aria-label="Restore Save" class="md-secondary md-hue-3">
-              <md-tooltip md-direction="bottom">
-                Restore Save
-              </md-tooltip>
-            </md-icon>
-            <!--<md-icon class="md-secondary" ng-click="doSecondaryAction($event)" aria-label="Chat" md-svg-icon="communication:message"></md-icon>-->
-          </md-list-item>
-        </md-list>
-
-      </form>
+<main class="app-shell main-screen" layout="column">
+  <header class="app-toolbar" layout="row" layout-align="space-between center">
+    <div class="brand-lockup" layout="row" layout-align="start center">
+      <div class="brand-mark">DS</div>
+      <div>
+        <div class="brand-eyebrow">DARK SOULS</div>
+        <div class="brand-title">Save Manager</div>
+      </div>
     </div>
-    <md-button class="md-raised md-primary" ng-click="vm.createBackup()">Create Backup</md-button>
-  </md-content>
-</div>
+    <div class="toolbar-actions" layout="row" layout-align="end center">
+      <md-menu>
+        <md-button class="toolbar-button" ng-click="vm.openMenu($mdOpenMenu, $event)" aria-label="More options">
+          <span class="button-glyph">•••</span> More
+        </md-button>
+        <md-menu-content>
+          <md-menu-item>
+            <md-button ng-click="vm.importSave($event)">Import backup file…</md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="vm.openSaveBackupFolder($event)">Open backup folder</md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+      <md-button class="toolbar-button settings-button" ng-click="vm.settingsPage()">⚙ Settings</md-button>
+    </div>
+  </header>
+
+  <section class="main-intro">
+    <div>
+      <p class="eyebrow">YOUR SAVE LIBRARY</p>
+      <h1>Backup collection</h1>
+      <p class="main-subtitle">Create restore points before a risky boss fight, a new area, or just because.</p>
+    </div>
+    <div class="category-tools" layout="row" layout-align="end center">
+      <md-input-container class="category-picker">
+        <label>Filter by category</label>
+        <md-select ng-model="vm.settings.selectedCategory" aria-label="Filter by category" ng-change="vm.categorySelect()">
+          <md-option ng-value="null">All backups</md-option>
+          <md-option ng-repeat="category in vm.categories" ng-value="category">{{category}}</md-option>
+        </md-select>
+      </md-input-container>
+      <md-button class="subtle-button" ng-click="vm.addCategory()">+ Category</md-button>
+      <md-button class="subtle-button danger-subtle" ng-click="vm.removeCategory()" ng-disabled="!vm.settings.selectedCategory">Remove</md-button>
+    </div>
+  </section>
+
+  <section class="backup-panel">
+    <div class="panel-heading" layout="row" layout-align="space-between center">
+      <div>
+        <h2>Saved backups</h2>
+        <p>Choose a backup to make it your primary restore point.</p>
+      </div>
+      <span class="backup-count">{{vm.saves.length}} total</span>
+    </div>
+
+    <div class="empty-state" ng-if="!vm.saves.length">
+      <div class="empty-icon">⌁</div>
+      <h3>No backups yet</h3>
+      <p>Your backup collection is empty. Create your first backup from the current game save.</p>
+      <md-button class="primary-action" ng-click="vm.createBackup()">Create first backup</md-button>
+    </div>
+
+    <div class="empty-state compact-empty" ng-if="vm.saves.length && !(vm.saves | filter: {category: vm.settings.selectedCategory}).length && vm.settings.selectedCategory">
+      <h3>No backups in this category</h3>
+      <p>Choose another category or remove this filter.</p>
+    </div>
+
+    <md-list class="backup-list" ng-if="vm.saves.length">
+      <md-list-item class="backup-row" ng-repeat="save in vm.saves track by save.id"
+        ng-if="!vm.settings.selectedCategory || save.category === vm.settings.selectedCategory"
+        ng-class="{'primary-backup': save.selected}"
+        ng-click="vm.selectSave(save.id, $event)">
+        <div class="backup-type" ng-class="{'auto-type': save.type === 'auto'}">
+          <span>{{save.type === 'auto' ? 'AUTO' : 'SAVE'}}</span>
+        </div>
+        <div class="backup-details" layout="column">
+          <div class="backup-name-line" layout="row" layout-align="start center">
+            <h3>{{save.name}}</h3>
+            <span class="primary-tag" ng-if="save.selected">PRIMARY</span>
+          </div>
+          <div class="backup-meta">
+            <span>{{save.time | date:'MMM d, yyyy · h:mm a'}}</span>
+            <span class="meta-dot" ng-if="save.category">•</span>
+            <span ng-if="save.category">{{save.category}}</span>
+          </div>
+        </div>
+        <div class="backup-actions" layout="row" layout-align="end center">
+          <md-button class="row-action" ng-if="save.type === 'auto'" ng-click="$event.stopPropagation(); vm.makeAutosavePermanent(save.id, $event)">Keep</md-button>
+          <md-button class="row-action" ng-click="$event.stopPropagation(); vm.selectSave(save.id, $event)">Set primary</md-button>
+          <md-button class="row-action" ng-click="$event.stopPropagation(); vm.renameSave(save.id, save.name, $event)">Rename</md-button>
+          <md-button class="row-action" ng-click="$event.stopPropagation(); vm.changeCategory(save.id, save.name, $event)">Category</md-button>
+          <md-button class="row-action restore-action" ng-click="$event.stopPropagation(); vm.restoreSave(save.id, $event)">Restore</md-button>
+          <md-button class="row-action delete-action" ng-click="$event.stopPropagation(); vm.deleteSave(save.id, $event)">Delete</md-button>
+        </div>
+      </md-list-item>
+    </md-list>
+  </section>
+
+  <footer class="main-footer" layout="row" layout-align="space-between center">
+    <div>
+      <span class="footer-dot"></span>
+      <span>Backups are stored locally on this computer.</span>
+    </div>
+    <md-button class="primary-action create-backup-action" ng-click="vm.createBackup()" ng-disabled="!vm.settings.saveFileLocation">＋ Create backup</md-button>
+  </footer>
+</main>
