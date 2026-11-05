@@ -6,6 +6,7 @@ const dialog = electron.dialog;
 const shell = electron.shell;
 const globalShortcut = electron.globalShortcut;
 const path = require('path');
+const fs = require('fs');
 const url = require('url');
 
 let mainWindow;
@@ -31,7 +32,11 @@ function createWindow() {
     slashes: true
   }));
 
-  if (!app.isPackaged) mainWindow.webContents.openDevTools();
+  if (!app.isPackaged && !process.argv.includes('--smoke-test')) mainWindow.webContents.openDevTools();
+
+  if (process.argv.includes('--smoke-test')) {
+    mainWindow.webContents.once('did-finish-load', runSmokeTest);
+  }
 
   mainWindow.on('closed', function () {
     mainWindow = null;
@@ -71,6 +76,86 @@ ipcMain.handle('shortcuts:register', (_event, accelerators) => {
   });
   return registered;
 });
+
+
+async function waitForRenderer(expression, timeoutMs) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (!mainWindow || mainWindow.isDestroyed()) throw new Error('Application window closed during smoke test');
+    try {
+      const result = await mainWindow.webContents.executeJavaScript(expression);
+      if (result) return result;
+    } catch (error) {
+      // Angular and its route template may still be booting.
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  throw new Error('Timed out waiting for renderer condition: ' + expression);
+}
+
+async function runSmokeTest() {
+  try {
+    const fixturePath = path.join(app.getPath('temp'), 'dssm-linux-smoke-save.sl2');
+    fs.writeFileSync(fixturePath, Buffer.alloc(256, 0x44));
+
+    await waitForRenderer(
+      "!!(window.angular && document.querySelector('.welcome-header') && window.electronAPI)",
+      10000
+    );
+
+    await mainWindow.webContents.executeJavaScript(`
+      (() => {
+        const injector = angular.element(document.body).injector();
+        const core = injector.get('core');
+        const scope = angular.element(document.querySelector('ng-view')).scope();
+        core.data.settings.notificationSound = false;
+        core.data.settings.windowsNotification = false;
+        core.data.settings.saveFileLocation = ${JSON.stringify(fixturePath)};
+        scope.$apply(() => {
+          scope.vm.saveFileLocation = ${JSON.stringify(fixturePath)};
+          scope.vm.continue();
+        });
+        return true;
+      })()
+    `);
+
+    await waitForRenderer("location.hash.indexOf('#!/main') !== -1 && !!document.querySelector('.backup-panel')", 10000);
+    const mainState = await mainWindow.webContents.executeJavaScript(`
+      (() => {
+        const core = angular.element(document.body).injector().get('core');
+        const backupPath = core.createBackup();
+        return {
+          heading: document.querySelector('.main-intro h1').textContent.trim(),
+          backupCount: core.data.saves.length,
+          backupExists: window.electronAPI.fs.existsSync(backupPath),
+          backupPath
+        };
+      })()
+    `);
+
+    if (mainState.heading !== 'Backup collection' || mainState.backupCount !== 1 || !mainState.backupExists) {
+      throw new Error('Main screen or backup smoke test failed: ' + JSON.stringify(mainState));
+    }
+
+    await mainWindow.webContents.executeJavaScript(`
+      (() => {
+        const scope = angular.element(document.querySelector('ng-view')).scope();
+        scope.$apply(() => scope.vm.settingsPage());
+      })()
+    `);
+    await waitForRenderer("!!(document.querySelector('.settings-screen') && document.querySelector('#backupFileFormat') && document.body.innerText.includes('Keyboard shortcuts'))", 10000);
+
+    console.log('[smoke-test] Welcome page rendered.');
+    console.log('[smoke-test] Main library rendered and backup file created.');
+    console.log('[smoke-test] Settings page rendered.');
+    console.log('[smoke-test] Electron preload and filesystem bridge working.');
+
+    app.exit(0);
+  } catch (error) {
+    console.error('[smoke-test] FAILED:', error && error.stack ? error.stack : error);
+    app.exit(1);
+  }
+}
 
 app.whenReady().then(createWindow);
 app.on('window-all-closed', function () {
