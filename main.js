@@ -125,10 +125,34 @@ async function runSmokeTest() {
       (() => {
         const core = angular.element(document.body).injector().get('core');
         const backupPath = core.createBackup();
+        const row = document.querySelector('.backup-row');
+        const title = row.querySelector('.backup-name-line h3');
+        const metadata = row.querySelector('.backup-meta');
+        const action = row.querySelector('.row-action');
+        const rgb = value => (value.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+        const luminance = value => {
+          const channels = rgb(value).map(channel => {
+            const normalized = channel / 255;
+            return normalized <= 0.04045 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
+          });
+          return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+        };
+        const contrast = (foreground, background) => {
+          const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+          return Number(((values[0] + 0.05) / (values[1] + 0.05)).toFixed(2));
+        };
+        const rowBackground = getComputedStyle(row).backgroundColor;
+        const actionStyle = getComputedStyle(action);
+        const contrastRatios = {
+          title: contrast(getComputedStyle(title).color, rowBackground),
+          date: contrast(getComputedStyle(metadata).color, rowBackground),
+          action: contrast(actionStyle.color, actionStyle.backgroundColor === 'rgba(0, 0, 0, 0)' ? rowBackground : actionStyle.backgroundColor)
+        };
         return {
           heading: document.querySelector('.main-intro h1').textContent.trim(),
           backupCount: core.data.saves.length,
           backupExists: window.electronAPI.fs.existsSync(backupPath),
+          contrastRatios,
           backupPath
         };
       })()
@@ -136,6 +160,9 @@ async function runSmokeTest() {
 
     if (mainState.heading !== 'Backup collection' || mainState.backupCount !== 1 || !mainState.backupExists) {
       throw new Error('Main screen or backup smoke test failed: ' + JSON.stringify(mainState));
+    }
+    if (Object.keys(mainState.contrastRatios).some(key => mainState.contrastRatios[key] < 4.5)) {
+      throw new Error('Backup row text does not meet 4.5:1 contrast target: ' + JSON.stringify(mainState.contrastRatios));
     }
 
     const restoreState = await mainWindow.webContents.executeJavaScript(`
@@ -166,6 +193,7 @@ async function runSmokeTest() {
 
     console.log('[smoke-test] Welcome page rendered.');
     console.log('[smoke-test] Main library rendered and backup file created.');
+    console.log('[smoke-test] Backup title, date, and action labels meet WCAG AA contrast target: ' + JSON.stringify(mainState.contrastRatios));
     console.log('[smoke-test] Restore flow replaced the live save and created a safety copy.');
     console.log('[smoke-test] Settings page rendered.');
     console.log('[smoke-test] Electron preload and filesystem bridge working.');
