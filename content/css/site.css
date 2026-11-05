@@ -584,3 +584,31 @@ body {
   .field-with-action { align-items: flex-start; flex-direction: column; }
   .field-with-action .settings-text, .field-with-action .md-button { width: 100%; }
 }
+
+
+/* Override Angular Material's default list-item surface on the backup library. */
+.backup-list md-list-item.backup-row,
+.backup-list md-list-item.backup-row .md-list-item-inner,
+.backup-list md-list-item.backup-row > .md-no-style,
+.backup-list md-list-item.backup-row > button.md-no-style {
+  background-color: #262a32 !important;
+  color: #e8e9ed;
+}
+.backup-list md-list-item.backup-row.primary-backup,
+.backup-list md-list-item.backup-row.primary-backup .md-list-item-inner,
+.backup-list md-list-item.backup-row.primary-backup > .md-no-style,
+.backup-list md-list-item.backup-row.primary-backup > button.md-no-style {
+  background-color: #2b2924 !important;
+}
+.backup-list md-list-item.backup-row:hover,
+.backup-list md-list-item.backup-row:hover .md-list-item-inner,
+.backup-list md-list-item.backup-row:hover > .md-no-style,
+.backup-list md-list-item.backup-row:hover > button.md-no-style {
+  background-color: #30343d !important;
+}
+.backup-list md-list-item.backup-row.primary-backup:hover,
+.backup-list md-list-item.backup-row.primary-backup:hover .md-list-item-inner,
+.backup-list md-list-item.backup-row.primary-backup:hover > .md-no-style,
+.backup-list md-list-item.backup-row.primary-backup:hover > button.md-no-style {
+  background-color: #353027 !important;
+}
