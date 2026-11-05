@@ -65,11 +65,14 @@
       <p>Choose another category or remove this filter.</p>
     </div>
 
-    <md-list class="backup-list" ng-if="vm.saves.length">
-      <md-list-item class="backup-row" ng-repeat="save in vm.saves track by save.id"
+    <div class="backup-list" ng-if="vm.saves.length">
+      <div class="backup-row" role="button" tabindex="0"
+        aria-label="Backup {{save.name}}. Select to make this the primary restore point."
+        ng-repeat="save in vm.saves track by save.id"
         ng-if="!vm.settings.selectedCategory || save.category === vm.settings.selectedCategory"
         ng-class="{'primary-backup': save.selected}"
-        ng-click="vm.selectSave(save.id, $event)">
+        ng-click="vm.selectSave(save.id, $event)"
+        ng-keydown="($event.keyCode === 13 || $event.keyCode === 32) && vm.selectSave(save.id, $event)">
         <div class="backup-type" ng-class="{'auto-type': save.type === 'auto'}">
           <span>{{save.type === 'auto' ? 'AUTO' : 'SAVE'}}</span>
         </div>
@@ -92,8 +95,8 @@
           <md-button class="row-action restore-action" ng-click="$event.stopPropagation(); vm.restoreSave(save.id, $event)">Restore</md-button>
           <md-button class="row-action delete-action" ng-click="$event.stopPropagation(); vm.deleteSave(save.id, $event)">Delete</md-button>
         </div>
-      </md-list-item>
-    </md-list>
+      </div>
+    </div>
   </section>
 
   <footer class="main-footer" layout="row" layout-align="space-between center">
