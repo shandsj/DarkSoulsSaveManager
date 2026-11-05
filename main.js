@@ -137,6 +137,24 @@ async function runSmokeTest() {
       throw new Error('Main screen or backup smoke test failed: ' + JSON.stringify(mainState));
     }
 
+    const restoreState = await mainWindow.webContents.executeJavaScript(`
+      (() => {
+        const core = angular.element(document.body).injector().get('core');
+        const backup = core.data.saves[0];
+        const fixturePath = ${JSON.stringify(path.join(app.getPath('temp'), 'dssm-linux-smoke-save.sl2'))};
+        window.electronAPI.fs.writeFileSync(fixturePath, new Uint8Array(256).fill(0x11));
+        core.restoreSave(backup.id);
+        return {
+          restoredByte: window.electronAPI.fs.readFileSync(fixturePath)[0],
+          safetyCopyExists: window.electronAPI.fs.existsSync(fixturePath + '.bak')
+        };
+      })()
+    `);
+
+    if (restoreState.restoredByte !== 0x44 || !restoreState.safetyCopyExists) {
+      throw new Error('Restore smoke test failed: ' + JSON.stringify(restoreState));
+    }
+
     await mainWindow.webContents.executeJavaScript(`
       (() => {
         const scope = angular.element(document.querySelector('ng-view')).scope();
@@ -147,6 +165,7 @@ async function runSmokeTest() {
 
     console.log('[smoke-test] Welcome page rendered.');
     console.log('[smoke-test] Main library rendered and backup file created.');
+    console.log('[smoke-test] Restore flow replaced the live save and created a safety copy.');
     console.log('[smoke-test] Settings page rendered.');
     console.log('[smoke-test] Electron preload and filesystem bridge working.');
 
